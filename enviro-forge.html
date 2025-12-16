@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarbonForge Demo | Forge Theory Environmental Application</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+            --secondary: #3b82f6;
+            --earth: #065f46;
+            --energy: #f59e0b;
+            --food: #8b5cf6;
+            --travel: #ef4444;
+            --shopping: #ec4899;
+            --caution: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+        
+        body {
+            background: #f8fafc;
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Warning Banner */
+        .warning-banner {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #7f1d1d;
+            padding: 15px 0;
+            border-bottom: 2px solid var(--caution);
+            text-align: center;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .warning-banner i {
+            margin-right: 10px;
+            color: var(--caution);
+        }
+        
+        /* Hero Header */
+        .hero {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            color: white;
+            padding: 40px 0 60px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .demo-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .disclaimer-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 4px solid var(--primary);
+            text-align: left;
+        }
+        
+        .disclaimer-box h4 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Theory Banner */
+        .theory-banner {
+            background: #1e293b;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .theory-banner .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .theory-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .theory-formula {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: var(--primary-light);
+        }
+        
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--earth);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .card-title i {
+            color: var(--primary);
+        }
+        
+        /* Category Sections */
+        .category-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            background: var(--gray-50);
+            border-left: 4px solid;
+            position: relative;
+        }
+        
+        .category-section::before {
+            content: 'DEMO DATA';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--gray-500);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .transport-section {
+            border-left-color: var(--secondary);
+        }
+        
+        .energy-section {
+            border-left-color: var(--energy);
+        }
+        
+        .food-section {
+            border-left-color: var(--food);
+        }
+        
+        .travel-section {
+            border-left-color: var(--travel);
+        }
+        
+        .shopping-section {
+            border-left-color: var(--shopping);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .transport-icon {
+            background: var(--secondary);
+        }
+        
+        .energy-icon {
+            background: var(--energy);
+        }
+        
+        .food-icon {
+            background: var(--food);
+        }
+        
+        .travel-icon {
+            background: var(--travel);
+        }
+        
+        .shopping-icon {
+            background: var(--shopping);
+        }
+        
+        .carbon-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--earth);
+        }
+        
+        .carbon-unit {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--gray-900);
+        }
+        
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+        
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* Interventions */
+        .interventions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .intervention-card {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .intervention-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .intervention-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+        
+        .intervention-check {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .intervention-card.selected .intervention-check {
+            background: var(--primary);
+        }
+        
+        .intervention-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: var(--gray-900);
+        }
+        
+        .intervention-description {
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            margin-bottom: 15px;
+        }
+        
+        .intervention-impact {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .impact-label {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        
+        .impact-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        /* Results Cards */
+        .results-grid {
+            display: grid;
+            gap: 25px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, var(--earth) 0%, #064e3b 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        
+        .summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .current-footprint {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        .footprint-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .comparison-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .comparison-item:last-child {
+            border-bottom: none;
+        }
+        
+        .comparison-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .comparison-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .comparison-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .badge-good {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .badge-warning {
+            background: var(--energy);
+            color: white;
+        }
+        
+        .badge-danger {
+            background: var(--travel);
+            color: white;
+        }
+        
+        .projection-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            border: 2px solid var(--gray-200);
+        }
+        
+        .projection-header {
+            margin-bottom: 25px;
+        }
+        
+        .projection-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--earth);
+        }
+        
+        .projection-subtitle {
+            color: var(--gray-700);
+            font-size: 0.95rem;
+        }
+        
+        .time-to-target {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: center;
+            margin: 25px 0;
+        }
+        
+        .savings-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .savings-item {
+            text-align: center;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 10px;
+        }
+        
+        .savings-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .savings-label {
+            font-size: 0.85rem;
+            color: var(--gray-700);
+        }
+        
+        .demo-button {
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+            padding: 16px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: not-allowed;
+            width: 100%;
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        /* Chart Section */
+        .chart-section {
+            margin: 50px 0;
+        }
+        
+        .chart-container {
+            height: 500px;
+            margin-top: 20px;
+        }
+        
+        .chart-disclaimer {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid var(--caution);
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+        
+        /* Business Model Section - CLEARLY MARKED AS POTENTIAL */
+        .potential-section {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .potential-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        
+        .potential-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .potential-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .potential-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        @media (max-width: 992px) {
+            .potential-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .potential-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .potential-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--primary-light);
+        }
+        
+        .potential-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        /* Forge Family */
+        .forge-family {
+            background: var(--gray-50);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 60px 0;
+            text-align: center;
+        }
+        
+        .forge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .forge-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .forge-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+        
+        .forge-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .forge-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 20px;
+        }
+        
+        .forge-name {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--earth);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--earth);
+            color: white;
+            padding: 50px 0 30px;
+            margin-top: 80px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 992px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .footer-section p {
+            opacity: 0.8;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .current-footprint {
+                font-size: 2.5rem;
+            }
+            
+            .category-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Warning Banner -->
+    <div class="warning-banner">
+        <div class="container">
+            <i class="fas fa-exclamation-triangle"></i>
+            THIS IS A DEMONSTRATION ONLY. All calculations use simplified example data for illustration purposes.
+            Not intended for actual carbon accounting or financial decisions.
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="demo-badge">
+                    <i class="fas fa-flask"></i> CONCEPT DEMONSTRATION
+                </div>
+                <h1>CarbonForge Concept</h1>
+                <p class="hero-subtitle">
+                    A demonstration of how Forge Theory could be applied to personal carbon footprint tracking.
+                    This shows the <strong>potential</strong> of using exponential decay modeling for environmental impact.
+                </p>
+                
+                <div class="disclaimer-box">
+                    <h4><i class="fas fa-info-circle"></i> Important Note</h4>
+                    <p>This is a proof-of-concept demo. Actual carbon calculations would require verified emissions factors,
+                    real consumption data, and scientific validation. The numbers shown are illustrative examples only.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Theory Banner -->
+        <div class="theory-banner">
+            <div class="container">
+                <div class="theory-label">Forge Theory Applied to Environmental Impact:</div>
+                <div class="theory-formula">impact(t) = initial_impact × e^(-k × t)</div>
+            </div>
+        </div>
+
+        <!-- Main Calculator -->
+        <div class="main-grid">
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-line"></i> Example Carbon Profile
+                    </h2>
+                    
+                    <p style="margin-bottom: 25px; color: var(--gray-700);">
+                        Adjust these example inputs to see how the model responds. These are <strong>illustrative values only</strong>.
+                    </p>
+                    
+                    <!-- Transport Section -->
+                    <div class="category-section transport-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <div class="section-icon transport-icon">
+                                    <i class="fas fa-car"></i>
+                                </div>
+                                Example: Transport
+                            </div>
+                            <div class="carbon-value">
+                                <span id="transport-carbon">2.4</span>
+                                <span class="carbon-unit">tons CO₂/year</span>
+                            </div>
+                        </div>
+                        
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label class="input-label">Weekly Mileage (example)</label>
+                                <input type="number" id="weekly-mileage" min="0" max="1000" value="150" step="10">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Vehicle Type</label>
+                                <select id="vehicle-type">
+                                    <option value="petrol">Petrol Car (example)</option>
+                                    <option value="diesel">Diesel Car</option>
+                                    <option value="hybrid">Hybrid</option>
+                                    <option value="electric">Electric Vehicle</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Energy Section -->
+                    <div class="category-section energy-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <div class="section-icon energy-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                Example: Home Energy
+                            </div>
+                            <div class="carbon-value">
+                                <span id="energy-carbon">2.1</span>
+                                <span class="carbon-unit">tons CO₂/year</span>
+                            </div>
+                        </div>
+                        
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label class="input-label">Home Type</label>
+                                <select id="home-type">
+                                    <option value="detached">Detached House (example)</option>
+                                    <option value="semi">Semi-Detached</option>
+                                    <option value="terraced">Terraced House</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Heating Source</label>
+                                <select id="heating-source">
+                                    <option value="gas">Natural Gas (example)</option>
+                                    <option value="electric">Electric</option>
+                                    <option value="solar">Solar/Renewable</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Food Section -->
+                    <div class="category-section food-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <div class="section-icon food-icon">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                Example: Diet
+                            </div>
+                            <div class="carbon-value">
+                                <span id="food-carbon">1.8</span>
+                                <span class="carbon-unit">tons CO₂/year</span>
+                            </div>
+                        </div>
+                        
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label class="input-label">Diet Type</label>
+                                <select id="diet-type">
+                                    <option value="meat-heavy">Meat Heavy (example)</option>
+                                    <option value="balanced">Balanced</option>
+                                    <option value="vegetarian">Vegetarian</option>
+                                    <option value="vegan">Vegan</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Food Waste Level</label>
+                                <select id="food-waste">
+                                    <option value="high">High Waste (example)</option>
+                                    <option value="moderate">Moderate</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Interventions Section -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-magic"></i> Example Interventions
+                    </h2>
+                    <p style="margin-bottom: 25px; color: var(--gray-700);">
+                        Select example interventions to see how the model calculates impact decay. 
+                        <strong>These percentages are illustrative.</strong>
+                    </p>
+                    
+                    <div class="interventions-grid">
+                        <div class="intervention-card" data-intervention="ev">
+                            <div class="intervention-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="intervention-title">Example: Switch to EV</div>
+                            <div class="intervention-description">
+                                Illustrative: Switching from petrol to electric vehicle (example reduction).
+                            </div>
+                            <div class="intervention-impact">
+                                <div>
+                                    <div class="impact-label">Example Reduction</div>
+                                    <div class="impact-value">~70%</div>
+                                </div>
+                                <div>
+                                    <div class="impact-label">Example Savings</div>
+                                    <div class="impact-value">~£1,200/yr</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="intervention-card" data-intervention="solar">
+                            <div class="intervention-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="intervention-title">Example: Solar Panels</div>
+                            <div class="intervention-description">
+                                Illustrative: Adding solar panels to home (example impact).
+                            </div>
+                            <div class="intervention-impact">
+                                <div>
+                                    <div class="impact-label">Example Reduction</div>
+                                    <div class="impact-value">~40%</div>
+                                </div>
+                                <div>
+                                    <div class="impact-label">Example Savings</div>
+                                    <div class="impact-value">~£800/yr</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="intervention-card" data-intervention="diet">
+                            <div class="intervention-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="intervention-title">Example: Diet Change</div>
+                            <div class="intervention-description">
+                                Illustrative: Reducing meat consumption (example impact).
+                            </div>
+                            <div class="intervention-impact">
+                                <div>
+                                    <div class="impact-label">Example Reduction</div>
+                                    <div class="impact-value">~30%</div>
+                                </div>
+                                <div>
+                                    <div class="impact-label">Example Savings</div>
+                                    <div class="impact-value">~£400/yr</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="results-section">
+                <div class="results-grid">
+                    <!-- Current Footprint Summary -->
+                    <div class="summary-card">
+                        <div class="summary-header">
+                            <div>
+                                <div class="current-footprint" id="total-carbon">8.3</div>
+                                <div class="footprint-label">Example Annual Footprint</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.9rem; opacity: 0.9;">Illustrative Only</div>
+                                <div style="font-size: 0.8rem; opacity: 0.7;">UK Avg: ~8.5 tons*</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comparison-item">
+                            <div class="comparison-label">Net Zero Target</div>
+                            <div class="comparison-value">0 tons</div>
+                            <span class="comparison-badge badge-warning" id="net-zero-status">~27 years</span>
+                        </div>
+                        
+                        <div class="comparison-item">
+                            <div class="comparison-label">UK Average*</div>
+                            <div class="comparison-value">~8.5 tons</div>
+                            <span class="comparison-badge badge-good" id="vs-average">Similar</span>
+                        </div>
+                        
+                        <div class="comparison-item">
+                            <div class="comparison-label">Global Average*</div>
+                            <div class="comparison-value">~4.8 tons</div>
+                            <span class="comparison-badge badge-warning" id="vs-global">Higher</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Projection Card -->
+                    <div class="projection-card">
+                        <div class="projection-header">
+                            <div class="projection-title">Example Decay Projection</div>
+                            <div class="projection-subtitle">
+                                With selected interventions, here's an illustrative decay projection:
+                            </div>
+                        </div>
+                        
+                        <div class="time-to-target" id="time-to-net-zero">
+                            ~8.2 years
+                        </div>
+                        <div style="text-align: center; color: var(--gray-700); margin-bottom: 20px; font-size: 0.9rem;">
+                            Illustrative time to significant reduction
+                        </div>
+                        
+                        <div class="savings-breakdown">
+                            <div class="savings-item">
+                                <div class="savings-value" id="carbon-savings-10y">~24.5</div>
+                                <div class="savings-label">Example CO₂ reduction<br>over 10 years</div>
+                            </div>
+                            <div class="savings-item">
+                                <div class="savings-value" id="money-savings-10y">~£24k</div>
+                                <div class="savings-label">Example savings<br>over 10 years</div>
+                            </div>
+                        </div>
+                        
+                        <button class="demo-button">
+                            <i class="fas fa-flask"></i> This is a Demo Only
+                        </button>
+                        
+                        <div style="margin-top: 20px; text-align: center; font-size: 0.85rem; color: var(--gray-500);">
+                            *Based on published average data for illustration
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chart Section -->
+        <div class="chart-section">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-project-diagram"></i> Illustrative Decay Visualization
+                </h2>
+                <div id="carbon-decay-chart" class="chart-container"></div>
+                <div class="chart-disclaimer">
+                    <i class="fas fa-exclamation-circle"></i> 
+                    <strong>Disclaimer:</strong> This chart shows an illustrative example of how exponential decay modeling 
+                    <em>could</em> be applied to carbon footprint reduction. Actual decay rates would depend on numerous 
+                    real-world factors and require scientific validation.
+                </div>
+            </div>
+        </div>
+        
+        <!-- CLEARLY MARKED: POTENTIAL BUSINESS MODEL -->
+        <div class="potential-section">
+            <div class="potential-overlay">
+                POTENTIAL
+            </div>
+            <h2 class="potential-title">Illustrative Market Potential</h2>
+            <p class="potential-subtitle">
+                <strong>Important:</strong> The following numbers represent <em>potential market sizes</em> based on industry research, 
+                not actual revenue or validated projections. This demonstrates the scale of the ESG software market that 
+                Forge Theory <em>could</em> address.
+            </p>
+            
+            <div class="potential-grid">
+                <div class="potential-card">
+                    <div class="potential-value">~£18M/year</div>
+                    <div class="potential-label">Illustrative consumer market potential<br>(based on 10M users × 5% conversion)</div>
+                </div>
+                <div class="potential-card">
+                    <div class="potential-value">~£45M/year</div>
+                    <div class="potential-label">Illustrative corporate ESG market<br>(based on industry software pricing)</div>
+                </div>
+                <div class="potential-card">
+                    <div class="potential-value">~£100M/year</div>
+                    <div class="potential-label">Illustrative government market<br>(based on sustainability platform pricing)</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; font-size: 0.95rem; opacity: 0.8; position: relative; z-index: 2;">
+                <i class="fas fa-lightbulb"></i> 
+                <strong>Concept Only:</strong> This demonstrates how Forge Theory could address the growing ESG software market. 
+                Actual revenue would depend on execution, market adoption, and product-market fit.
+            </div>
+        </div>
+        
+        <!-- Forge Family -->
+        <div class="forge-family">
+            <h2 style="font-size: 2rem; margin-bottom: 20px; color: var(--earth);">The Forge Theory Family</h2>
+            <p style="max-width: 800px; margin: 0 auto 30px; color: var(--gray-700);">
+                Same mathematical framework applied across different domains. CarbonForge represents one potential application.
+            </p>
+            
+            <div class="forge-grid">
+                <div class="forge-card">
+                    <div class="forge-icon">
+                        <i class="fas fa-tire"></i>
+                    </div>
+                    <div class="forge-name">TyreForge</div>
+                    <p>Tyre wear modeling using exponential decay</p>
+                </div>
+                
+                <div class="forge-card">
+                    <div class="forge-icon">
+                        <i class="fas fa-tooth"></i>
+                    </div>
+                    <div class="forge-name">ToothForge</div>
+                    <p>Enamel degradation modeling</p>
+                </div>
+                
+                <div class="forge-card">
+                    <div class="forge-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="forge-name">DopeDecay</div>
+                    <p>Motivation decay modeling</p>
+                </div>
+                
+                <div class="forge-card">
+                    <div class="forge-icon">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <div class="forge-name">CaffeineForge</div>
+                    <p>Caffeine metabolism modeling</p>
+                </div>
+                
+                <div class="forge-card">
+                    <div class="forge-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="forge-name">TrialForge</div>
+                    <p>Clinical trial retention modeling</p>
+                </div>
+                
+                <div class="forge-card">
+                    <div class="forge-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="forge-name">CarbonForge</div>
+                    <p>Environmental impact decay modeling</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About This Demo</h3>
+                    <p>This is a proof-of-concept demonstration of Forge Theory applied to environmental impact modeling.</p>
+                    <p><strong>Not for actual use:</strong> All calculations are illustrative examples only.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Forge Theory</h3>
+                    <p>Universal decay modeling framework:</p>
+                    <p style="font-family: 'Courier New', monospace; font-size: 0.9rem;">
+                        value(t) = initial × e^(-k × t)
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Important Disclaimer</h3>
+                    <p>This demonstration uses example data for illustration purposes only. Not intended for carbon accounting, financial decisions, or environmental reporting.</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2023 CarbonForge Concept Demonstration | Proof-of-concept only | Not a real product</p>
+                <p style="margin-top: 10px; font-size: 0.8rem;">All calculations use simplified example data. Actual carbon accounting requires verified emissions factors and scientific validation.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simplified example factors for demonstration
+        const EXAMPLE_FACTORS = {
+            transport: {
+                'petrol': 0.0003,
+                'diesel': 0.00027,
+                'hybrid': 0.00015,
+                'electric': 0.00007
+            },
+            
+            energy: {
+                'detached': { gas: 2.8, electric: 3.2, solar: 0.5 },
+                'semi': { gas: 2.1, electric: 2.4, solar: 0.4 },
+                'terraced': { gas: 1.6, electric: 1.8, solar: 0.3 }
+            },
+            
+            diet: {
+                'meat-heavy': 2.5,
+                'balanced': 1.8,
+                'vegetarian': 1.3,
+                'vegan': 1.0
+            },
+            
+            waste: {
+                'high': 1.3,
+                'moderate': 1.0,
+                'low': 0.8
+            }
+        };
+        
+        // Example intervention impacts
+        const EXAMPLE_INTERVENTIONS = {
+            'ev': { reduction: 0.7, savings: 1200 },
+            'solar': { reduction: 0.4, savings: 800 },
+            'diet': { reduction: 0.3, savings: 400 }
+        };
+        
+        // DOM Elements
+        const transportCarbonEl = document.getElementById('transport-carbon');
+        const energyCarbonEl = document.getElementById('energy-carbon');
+        const foodCarbonEl = document.getElementById('food-carbon');
+        const totalCarbonEl = document.getElementById('total-carbon');
+        
+        const netZeroStatusEl = document.getElementById('net-zero-status');
+        const vsAverageEl = document.getElementById('vs-average');
+        const vsGlobalEl = document.getElementById('vs-global');
+        
+        const timeToNetZeroEl = document.getElementById('time-to-net-zero');
+        const carbonSavingsEl = document.getElementById('carbon-savings-10y');
+        const moneySavingsEl = document.getElementById('money-savings-10y');
+        
+        // Selected interventions
+        let selectedInterventions = new Set(['ev']);
+        
+        // Initialize intervention cards
+        function initInterventions() {
+            const interventionCards = document.querySelectorAll('.intervention-card');
+            
+            interventionCards.forEach(card => {
+                const intervention = card.getAttribute('data-intervention');
+                
+                if (selectedInterventions.has(intervention)) {
+                    card.classList.add('selected');
+                }
+                
+                card.addEventListener('click', () => {
+                    card.classList.toggle('selected');
+                    
+                    if (selectedInterventions.has(intervention)) {
+                        selectedInterventions.delete(intervention);
+                    } else {
+                        selectedInterventions.add(intervention);
+                    }
+                    
+                    calculateExampleFootprint();
+                });
+            });
+        }
+        
+        // Calculate example footprint
+        function calculateExampleFootprint() {
+            // Get example input values
+            const weeklyMileage = parseFloat(document.getElementById('weekly-mileage').value) || 0;
+            const vehicleType = document.getElementById('vehicle-type').value;
+            const homeType = document.getElementById('home-type').value;
+            const heatingSource = document.getElementById('heating-source').value;
+            const dietType = document.getElementById('diet-type').value;
+            const foodWaste = document.getElementById('food-waste').value;
+            
+            // Calculate example transport
+            const annualMiles = weeklyMileage * 52;
+            const transportCarbon = annualMiles * EXAMPLE_FACTORS.transport[vehicleType];
+            
+            // Calculate example energy
+            const energyCarbon = EXAMPLE_FACTORS.energy[homeType][heatingSource];
+            
+            // Calculate example food
+            const foodCarbon = EXAMPLE_FACTORS.diet[dietType] * EXAMPLE_FACTORS.waste[foodWaste];
+            
+            // Fixed example values for other categories (for simplicity)
+            const travelCarbon = 1.2;
+            const shoppingCarbon = 0.8;
+            
+            // Calculate total example footprint
+            let totalCarbon = transportCarbon + energyCarbon + foodCarbon + travelCarbon + shoppingCarbon;
+            
+            // Update display with example data
+            transportCarbonEl.textContent = transportCarbon.toFixed(1);
+            energyCarbonEl.textContent = energyCarbon.toFixed(1);
+            foodCarbonEl.textContent = foodCarbon.toFixed(1);
+            totalCarbonEl.textContent = totalCarbon.toFixed(1);
+            
+            // Update comparison badges
+            const yearsToNetZero = 27 - (selectedInterventions.size * 5);
+            netZeroStatusEl.textContent = `~${yearsToNetZero} years`;
+            
+            const ukAverage = 8.5;
+            const difference = ((ukAverage - totalCarbon) / ukAverage * 100).toFixed(0);
+            
+            if (Math.abs(difference) < 5) {
+                vsAverageEl.textContent = 'Similar';
+                vsAverageEl.className = 'comparison-badge badge-good';
+            } else if (totalCarbon < ukAverage) {
+                vsAverageEl.textContent = `${difference}% less`;
+                vsAverageEl.className = 'comparison-badge badge-good';
+            } else {
+                vsAverageEl.textContent = `${Math.abs(difference)}% more`;
+                vsAverageEl.className = 'comparison-badge badge-warning';
+            }
+            
+            const globalAverage = 4.8;
+            const vsGlobal = ((totalCarbon - globalAverage) / globalAverage * 100).toFixed(0);
+            vsGlobalEl.textContent = `${vsGlobal}% higher`;
+            vsGlobalEl.className = 'comparison-badge badge-warning';
+            
+            // Calculate example intervention impacts
+            calculateExampleInterventions(totalCarbon, transportCarbon, energyCarbon, foodCarbon);
+        }
+        
+        // Calculate example intervention impacts
+        function calculateExampleInterventions(totalCarbon, transportCarbon, energyCarbon, foodCarbon) {
+            let totalReduction = 0;
+            let totalSavings = 0;
+            
+            // Apply example interventions
+            selectedInterventions.forEach(intervention => {
+                const impact = EXAMPLE_INTERVENTIONS[intervention];
+                if (impact) {
+                    let categoryReduction = 0;
+                    
+                    switch(intervention) {
+                        case 'ev':
+                            categoryReduction = transportCarbon * impact.reduction;
+                            break;
+                        case 'solar':
+                            categoryReduction = energyCarbon * impact.reduction;
+                            break;
+                        case 'diet':
+                            categoryReduction = foodCarbon * impact.reduction;
+                            break;
+                    }
+                    
+                    totalReduction += categoryReduction;
+                    totalSavings += impact.savings;
+                }
+            });
+            
+            // Calculate example new carbon
+            const newCarbon = totalCarbon - totalReduction;
+            
+            // Calculate example time to reduction
+            const yearsToReduction = 8.2 - (selectedInterventions.size * 2);
+            
+            // Calculate example 10-year savings
+            const carbonSavings10y = totalReduction * 8;
+            const moneySavings10y = totalSavings * 8;
+            
+            // Update display
+            timeToNetZeroEl.textContent = `~${yearsToReduction.toFixed(1)} years`;
+            carbonSavingsEl.textContent = `~${carbonSavings10y.toFixed(1)}`;
+            moneySavingsEl.textContent = `~£${Math.round(moneySavings10y/1000)}k`;
+            
+            // Update chart
+            updateExampleChart(totalCarbon, newCarbon);
+        }
+        
+        // Update example chart
+        function updateExampleChart(initialCarbon, targetCarbon) {
+            const years = 20;
+            const dataPoints = [];
+            
+            // Generate example decay curve
+            const k = 0.15 + (selectedInterventions.size * 0.05);
+            
+            for (let t = 0; t <= years; t += 0.5) {
+                // Example decay: carbon(t) = target + (initial - target) * e^(-k*t)
+                const carbonWithInterventions = targetCarbon + (initialCarbon - targetCarbon) * Math.exp(-k * t);
+                
+                // Example baseline (slower reduction)
+                const carbonBaseline = initialCarbon * Math.exp(-0.08 * t);
+                
+                dataPoints.push({
+                    year: t,
+                    withInterventions: Math.max(0, carbonWithInterventions),
+                    baseline: Math.max(0, carbonBaseline)
+                });
+            }
+            
+            // Create traces
+            const baselineTrace = {
+                x: dataPoints.map(point => point.year),
+                y: dataPoints.map(point => point.baseline),
+                mode: 'lines',
+                name: 'Example: Current Path',
+                line: {
+                    color: '#ef4444',
+                    width: 3,
+                    dash: 'dash'
+                }
+            };
+            
+            const interventionTrace = {
+                x: dataPoints.map(point => point.year),
+                y: dataPoints.map(point => point.withInterventions),
+                mode: 'lines',
+                name: 'Example: With Interventions',
+                line: {
+                    color: '#10b981',
+                    width: 4
+                }
+            };
+            
+            const layout = {
+                title: 'Illustrative Decay Projection (Example Only)',
+                xaxis: {
+                    title: 'Years',
+                    range: [0, years],
+                    gridcolor: '#e5e7eb'
+                },
+                yaxis: {
+                    title: 'Example Carbon Footprint (tons CO₂/year)',
+                    range: [0, Math.max(initialCarbon * 1.1, 10)],
+                    gridcolor: '#e5e7eb'
+                },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white',
+                hovermode: 'x unified',
+                showlegend: true,
+                legend: {
+                    orientation: 'h',
+                    y: -0.2,
+                    x: 0.5,
+                    xanchor: 'center'
+                },
+                annotations: [
+                    {
+                        x: years * 0.7,
+                        y: initialCarbon * 0.9,
+                        text: 'Example projection only',
+                        showarrow: false,
+                        font: {color: '#6b7280', size: 12}
+                    }
+                ]
+            };
+            
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false
+            };
+            
+            Plotly.newPlot(
+                'carbon-decay-chart',
+                [baselineTrace, interventionTrace],
+                layout,
+                config
+            );
+        }
+        
+        // Initialize the demo
+        function initDemo() {
+            const inputs = document.querySelectorAll('select, input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('change', calculateExampleFootprint);
+                input.addEventListener('input', calculateExampleFootprint);
+            });
+            
+            initInterventions();
+            calculateExampleFootprint();
+        }
+        
+        document.addEventListener('DOMContentLoaded', initDemo);
+    </script>
+</body>
+</html>
